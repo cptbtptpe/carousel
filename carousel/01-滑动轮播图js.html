@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        .outer {
+            width: 490px;
+            height: 170px;
+            padding: 5px;
+            margin: 100px auto;
+            border: 1px solid #ccc;
+        }
+        .inner {
+            width: 490px;
+            height: 170px;
+            overflow: hidden;
+            position: relative;
+        }
+        img {
+            vertical-align: middle;
+        }
+        ul {
+            position: absolute;
+            width: 500%;
+        }
+        ul li {
+            float: left;
+        }
+        ol {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        ol li {
+            float: left;
+            width: 16px;
+            height: 16px;
+            background-color: #fff;
+            text-align: center;
+            line-height: 16px;
+            cursor: pointer;
+            margin: 0 6px;
+            border: 1px solid #ccc;
+        }
+        .current {
+            background-color: orange;
+            color: #fff;
+        }
+    </style>
+
+    <script>
+        window.onload = function () {
+            //需求: 鼠标放到ol中的li上,让ul中对应的li,滑动到inner中;
+                    //原理: 让ul向做移动;
+                        //鼠标放到ol中的第一个li上,ul向做移动0;
+                        //鼠标放到ol中的第二个li上,ul向做移动1张图片;
+                        //鼠标放到ol中的第三个li上,ul向做移动2张图片;
+                        //.......
+                        //鼠标放到ol中的第五个li上,ul向做移动4张图片;
+                            //向左移动ol中的li对应的索引值个图片的宽个距离;
+            //步骤:
+            //1.获取事件源和相关元素;
+            //2.绑定事件;(for循环绑定),并书写事件驱动程序;
+            //3.移动ul的位置;(具体移动多少,看上面的原理分析;)
+
+            //1.获取事件源和相关元素;
+            var inner = document.getElementById("inner");
+            var imgWidth = inner.offsetWidth;
+            var ul = inner.children[0];
+            var olLiArr = inner.children[1].children;
+            //2.绑定事件;(for循环绑定),并书写事件驱动程序;
+            for(var i=0;i<olLiArr.length;i++){
+                //自定义属性;
+                olLiArr[i]["index"] = i;
+                olLiArr[i].onmouseover = function () {
+                    //点亮盒子;(排他思想)
+                    for(var j=0;j<olLiArr.length;j++){
+                        olLiArr[j].className = "";
+                    }
+                    this.className = "current";
+                    //3.移动ul的位置;(具体移动多少,看上面的原理分析;)
+                        //移动ul的距离和索引值*图片的宽;
+                    animate(ul,-this.index*imgWidth);
+                }
+            }
+        }
+
+
+
+        //把匀速动画封装起来；
+        function animate(ele,target) {
+            //要用定时器,先清定时器;
+            clearInterval(ele.timer);
+            ele.timer = setInterval(function () {
+                //盒子未来的位置 = 本身位置 + 步长;
+                var step = target>ele.offsetLeft?10:-10;
+                ele.style.left = ele.offsetLeft + step + "px";
+                //目标位置和当前位置的差值不足一个步长的时候，清除定时器
+                if(Math.abs(target-ele.offsetLeft) <= Math.abs(step)){
+                    ele.style.left = target + "px";
+                    clearInterval(ele.timer);
+                }
+            },10);
+        }
+    </script>
+</head>
+<body>
+
+    <div class="outer">
+        <div class="inner" id="inner">
+            <ul>
+                <li><a href="#"><img src="images/01.jpg" alt=""/></a></li>
+                <li><a href="#"><img src="images/02.jpg" alt=""/></a></li>
+                <li><a href="#"><img src="images/03.jpg" alt=""/></a></li>
+                <li><a href="#"><img src="images/04.jpg" alt=""/></a></li>
+                <li><a href="#"><img src="images/05.jpg" alt=""/></a></li>
+            </ul>
+            <ol>
+                <li class="current">1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+            </ol>
+        </div>
+    </div>
+
+
+
+
+
+</body>
+</html>
